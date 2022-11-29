@@ -33,7 +33,6 @@ PROTOCOLS = (None,
              Protocol(80, 3, 25, 3, 13, 11, 5, False),   # protocol 17 (ORNO OR-GB-417GD)
              Protocol(82, 2, 65, 3, 5, 7, 1, False),     # protocol 18 (CLARUS BHC993BF-3)
              Protocol(560, 16, 8, 1, 1, 1, 3, False),    # protocol 19 (NEC)
-             Protocol(200, 1, 10, 1, 5, 1, 1, False),    # protocol 20 (AS 14/3) tx_length = 32
              #Protocol(1025, 1, 10, 1, 5, 1, 1, False),   # experiment
         )
 
