@@ -1,0 +1,76 @@
+#!/usr/bin/env python3
+
+import argparse
+import signal
+import sys
+import time
+import logging
+from RPi import GPIO
+
+from rpi_rf import RFDevice
+
+LED_YELLOW = 17
+LED_BLUE = 18
+
+RELAY_PIN = 25
+RF_PIN = 27
+RF_SLEEP_PIN = 22
+
+DOOR_DELAY = 1
+DOOR_OPEN = 2
+
+rfdevice = None
+
+# pylint: disable=unused-argument
+def exithandler(signal, frame):
+    rfdevice.cleanup()
+    sys.exit(0)
+
+logging.basicConfig(level=logging.INFO, datefmt='%Y-%m-%d %H:%M:%S',
+                    format='%(asctime)-15s - [%(levelname)s] %(module)s: %(message)s', )
+
+parser = argparse.ArgumentParser(description='Receives a decimal code via a 433/315MHz GPIO device')
+parser.add_argument('-g', dest='gpio', type=int, default=RF_PIN, help="GPIO pin (Default: 27)")
+args = parser.parse_args()
+
+signal.signal(signal.SIGINT, exithandler)
+rfdevice = RFDevice(args.gpio)
+GPIO.setup(RF_SLEEP_PIN, GPIO.OUT)
+GPIO.output(RF_SLEEP_PIN, GPIO.HIGH)
+
+rfdevice.enable_rx()
+
+GPIO.setup(LED_YELLOW, GPIO.OUT)
+GPIO.setup(LED_BLUE, GPIO.OUT)
+GPIO.setup(RELAY_PIN, GPIO.OUT)
+
+GPIO.output(LED_YELLOW, GPIO.HIGH)
+time.sleep(1)
+GPIO.output(LED_YELLOW, GPIO.LOW)
+
+def open_door():
+  print("Opening the door...")
+  GPIO.output(LED_BLUE, GPIO.HIGH)
+  time.sleep(DOOR_DELAY)
+  GPIO.output(RELAY_PIN, GPIO.HIGH)
+  time.sleep(DOOR_OPEN)
+  GPIO.output(RELAY_PIN, GPIO.LOW)
+  GPIO.output(LED_BLUE, GPIO.LOW)
+
+timestamp = None
+repeat = 0
+logging.info("Listening for codes on GPIO " + str(args.gpio))
+while True:
+    if rfdevice.rx_code_timestamp != timestamp:
+        timestamp = rfdevice.rx_code_timestamp
+        logging.info(str(rfdevice.rx_code) +
+                     " (" + format(rfdevice.rx_code, '#0{}b'.format(rfdevice.tx_length + 2))[2:] + ")" +
+                     " [pulselength " + str(rfdevice.rx_pulselength) +
+                     ", bitlength " + str(rfdevice.rx_bitlength) +
+                     ", protocol " + str(rfdevice.rx_proto) + "]")
+
+        if rfdevice.rx_code == 4095:
+            open_door()
+
+    time.sleep(0.01)
+rfdevice.cleanup()
