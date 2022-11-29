@@ -14,15 +14,28 @@ _LOGGER = logging.getLogger(__name__)
 
 Protocol = namedtuple('Protocol', ['pulselength', 'sync_high', 'sync_low', 'zero_high', 'zero_low', 'one_high', 'one_low', 'inverted'])
 PROTOCOLS = (None,
-             Protocol(350, 1, 31, 1, 3, 3, 1, False),
-             Protocol(650, 1, 10, 1, 2, 2, 1, False),
-             Protocol(100, 30, 71, 4, 11, 9, 6, False),
-             Protocol(380, 1, 6, 1, 3, 3, 1, False),
-             Protocol(500, 6, 14, 1, 2, 2, 1, False),
-             Protocol(200, 1, 10, 1, 5, 1, 1, False),
-             Protocol(150, 2, 62, 1, 6, 6, 1, False),
-             Protocol(270, 36, 1, 1, 2, 2, 1, True))
-
+             Protocol(350, 1, 31, 1, 3, 3, 1, False),    # protocol 1
+             Protocol(650, 1, 10, 1, 2, 2, 1, False),    # protocol 2
+             Protocol(100, 30, 71, 4, 11, 9, 6, False),  # protocol 3
+             Protocol(380, 1, 6, 1, 3, 3, 1, False),     # protocol 4
+             Protocol(500, 6, 14, 1, 2, 2, 1, False),    # protocol 5
+             Protocol(200, 1, 10, 1, 5, 1, 1, False),    # protocol 6 tx_length = 32
+             Protocol(150, 2, 62, 1, 6, 6, 1, False),    # protocol 7 (HS2303-PT, i. e. used in AUKEY Remote)
+             Protocol(270, 36, 1, 1, 2, 2, 1, True),     # protocol 8 (HT12E) tx_length = 12
+             Protocol(450, 23, 1, 1, 2, 2, 1, True),     # protocol 9 (HT6P20B)
+             Protocol(200, 3, 130, 7, 16, 3, 16, False), # protocol 10 (Conrad RS-200 RX)
+             Protocol(200, 130, 7, 16, 7, 16, 3, True),  # protocol 11 (Conrad RS-200 TX)
+             Protocol(365, 18, 1, 3, 1, 1, 3, True),     # protocol 12 (1ByOne Doorbell)
+             Protocol(320, 36, 1, 1, 2, 2, 1, True),     # protocol 13 (SM5212)
+             Protocol(500, 1, 14, 1, 3, 3, 1, False),    # protocol 14 (Blyss Doorbell Ref. DC6-FR-WH 656185)
+             Protocol(415, 1, 30, 1, 3, 4, 1, False),    # protocol 15 (sc2260R4)
+             Protocol(250, 20, 10, 1, 1, 3, 1, False),   # protocol 16 (Home NetWerks Bathroom Fan Model 6201-500)
+             Protocol(80, 3, 25, 3, 13, 11, 5, False),   # protocol 17 (ORNO OR-GB-417GD)
+             Protocol(82, 2, 65, 3, 5, 7, 1, False),     # protocol 18 (CLARUS BHC993BF-3)
+             Protocol(560, 16, 8, 1, 1, 1, 3, False),    # protocol 19 (NEC)
+             Protocol(200, 1, 10, 1, 5, 1, 1, False),    # protocol 20 (AS 14/3) tx_length = 32
+             #Protocol(1025, 1, 10, 1, 5, 1, 1, False),   # experiment
+        )
 
 class RFDevice:
     """Representation of a GPIO RF device."""
@@ -288,8 +301,8 @@ class RFDevice:
             return True
 
         return False
-           
-    def _sleep(self, delay):      
+
+    def _sleep(self, delay):
         _delay = delay / 100
         end = time.time() + delay - _delay
         time.sleep(_delay)
