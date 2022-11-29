@@ -19,7 +19,7 @@ PROTOCOLS = (None,
              Protocol(100, 30, 71, 4, 11, 9, 6, False),  # protocol 3
              Protocol(380, 1, 6, 1, 3, 3, 1, False),     # protocol 4
              Protocol(500, 6, 14, 1, 2, 2, 1, False),    # protocol 5
-             Protocol(200, 1, 10, 1, 5, 1, 1, False),    # protocol 6 tx_length = 32
+             #Protocol(200, 1, 10, 1, 5, 1, 1, False),    # protocol 6 tx_length = 32
              Protocol(150, 2, 62, 1, 6, 6, 1, False),    # protocol 7 (HS2303-PT, i. e. used in AUKEY Remote)
              Protocol(270, 36, 1, 1, 2, 2, 1, True),     # protocol 8 (HT12E) tx_length = 12
              Protocol(450, 23, 1, 1, 2, 2, 1, True),     # protocol 9 (HT6P20B)
@@ -33,14 +33,14 @@ PROTOCOLS = (None,
              Protocol(80, 3, 25, 3, 13, 11, 5, False),   # protocol 17 (ORNO OR-GB-417GD)
              Protocol(82, 2, 65, 3, 5, 7, 1, False),     # protocol 18 (CLARUS BHC993BF-3)
              Protocol(560, 16, 8, 1, 1, 1, 3, False),    # protocol 19 (NEC)
-             #Protocol(1025, 1, 10, 1, 5, 1, 1, False),   # experiment
+             Protocol(300, 1, 34, 1, 2, 1, 1, False),    # protocol 20 (door bell, AS 14/3)
         )
 
 class RFDevice:
     """Representation of a GPIO RF device."""
 
     # pylint: disable=too-many-instance-attributes,too-many-arguments
-    def __init__(self, gpio, tx_proto=1, tx_pulselength=None, tx_repeat=10, tx_length=24, rx_tolerance=80, tx_inverted=None):
+    def __init__(self, gpio, tx_proto=1, tx_pulselength=None, tx_repeat=10, tx_length=24, tx_inverted=None, rx_tolerance=80):
         """Initialize the RF device."""
         self.gpio = gpio
         self.tx_enabled = False

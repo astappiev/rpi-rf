@@ -49,7 +49,7 @@ time.sleep(1)
 GPIO.output(LED_YELLOW, GPIO.LOW)
 
 def open_door():
-  print("Opening the door...")
+  logging.info("Opening the door...")
   GPIO.output(LED_BLUE, GPIO.HIGH)
   time.sleep(DOOR_DELAY)
   GPIO.output(RELAY_PIN, GPIO.HIGH)
@@ -69,8 +69,15 @@ while True:
                      ", bitlength " + str(rfdevice.rx_bitlength) +
                      ", protocol " + str(rfdevice.rx_proto) + "]")
 
-        if rfdevice.rx_code == 4095:
-            open_door()
+        if rfdevice.rx_code == 32:
+            repeat += 2
+            # open_door()
 
-    time.sleep(0.01)
+    if repeat >= 3:
+        open_door()
+        repeat = 0
+    elif repeat > 0:
+        repeat -= 1
+
+    time.sleep(1)
 rfdevice.cleanup()
